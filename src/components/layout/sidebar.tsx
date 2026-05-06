@@ -1,28 +1,23 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
-import {
-  LayoutDashboard,
-  GraduationCap,
-  X,
-  BookOpen,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { motion } from "framer-motion"
+import { LayoutDashboard, GraduationCap, X, BookOpen } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/mahasiswa", label: "Data Mahasiswa", icon: GraduationCap },
-];
+]
 
 interface SidebarProps {
-  open: boolean;
-  onClose: () => void;
+  open: boolean
+  onClose: () => void
 }
 
 export function Sidebar({ open, onClose }: SidebarProps) {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   return (
     <>
@@ -50,7 +45,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <BookOpen className="h-4 w-4" />
             </div>
-            <span className="text-base font-bold tracking-tight">UniManager</span>
+            <span className="text-base font-bold tracking-tight">Akademiku</span>
           </Link>
           <Button
             variant="ghost"
@@ -68,8 +63,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             Menu Utama
           </p>
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
+            const isActive = pathname === item.href
+            const Icon = item.icon
             return (
               <Link
                 key={item.href}
@@ -99,7 +94,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                   <span className="relative z-10">{item.label}</span>
                 </div>
               </Link>
-            );
+            )
           })}
         </nav>
 
@@ -107,10 +102,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
           <div className="rounded-xl bg-accent/50 p-3">
             <p className="text-xs font-medium text-muted-foreground">UAS Algoritma</p>
-            <p className="text-[11px] text-muted-foreground/70 mt-0.5">Semester 3 • 2024</p>
+            <p className="text-[11px] text-muted-foreground/70 mt-0.5">
+              Semester 3 • 2024
+            </p>
           </div>
         </div>
       </aside>
     </>
-  );
+  )
 }
