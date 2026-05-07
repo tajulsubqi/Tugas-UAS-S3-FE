@@ -44,6 +44,8 @@ export function useMahasiswa() {
   }, [])
 
   const fetchStats = useCallback(async () => {
+    setError(null)
+    setIsLoading(true)
     try {
       const response = await api.get("/api/mahasiswa/stats")
       setStats(response.data.data)
@@ -52,15 +54,24 @@ export function useMahasiswa() {
         (err as { response?: { data?: { message?: string } } })?.response?.data
           ?.message || "Gagal memuat statistik"
       setError(message)
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 
   const fetchChartData = useCallback(async () => {
+    setError(null)
+    setIsLoading(true)
     try {
       const response = await api.get("/api/mahasiswa/charts")
       setChartData(response.data.data)
-    } catch {
-      // silent – chart data bersifat opsional
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Gagal memuat data chart"
+      setError(message)
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 

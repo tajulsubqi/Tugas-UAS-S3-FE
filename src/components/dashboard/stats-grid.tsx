@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { Users, BookOpen, TrendingUp } from "lucide-react";
-import { StatCard } from "./stat-card";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { DashboardStats } from "@/types";
+import { Users, BookOpen, TrendingUp } from "lucide-react"
+import { StatCard } from "./stat-card"
+import { Skeleton } from "@/components/ui/skeleton"
+import type { DashboardStats } from "@/types"
 
 interface StatsGridProps {
-  stats: DashboardStats | null;
-  isLoading: boolean;
+  stats: DashboardStats | null
+  isLoading: boolean
 }
 
 export function StatsGrid({ stats, isLoading }: StatsGridProps) {
@@ -27,10 +27,10 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
           </div>
         ))}
       </div>
-    );
+    )
   }
 
-  if (!stats) return null;
+  if (!stats) return null
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -59,5 +59,5 @@ export function StatsGrid({ stats, isLoading }: StatsGridProps) {
         index={2}
       />
     </div>
-  );
+  )
 }
