@@ -45,7 +45,7 @@ const initialForm = {
 
 export default function UsersPage() {
   const router = useRouter()
-  const { user } = useAuthStore()
+  const { user, token, hasHydrated } = useAuthStore()
   const { users, isLoading, error, fetchUsers, createUser, updateUser, deleteUser } =
     useUsers()
 
@@ -62,13 +62,17 @@ export default function UsersPage() {
   const isAdmin = user?.role === "admin"
 
   useEffect(() => {
+    if (!hasHydrated) return
+
     if (!isAdmin) {
       router.replace("/dashboard")
       return
     }
 
+    if (!token) return
+
     fetchUsers()
-  }, [isAdmin, fetchUsers, router])
+  }, [hasHydrated, isAdmin, token, fetchUsers, router])
 
   const formTitle = useMemo(() => (editingId ? "Edit User" : "Tambah User"), [editingId])
 

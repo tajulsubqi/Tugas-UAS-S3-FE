@@ -21,6 +21,7 @@ export function useAuth() {
       const { token, user } = response.data
 
       if (token && user) {
+        localStorage.setItem("token", token)
         setAuth(user, token)
         router.push("/dashboard")
         return { success: true, message: "Login berhasil" }
@@ -85,9 +86,9 @@ export function useAuth() {
     try {
       await api.post("/api/auth/logout")
     } catch {
-      // Ignore logout errors
     } finally {
       storeLogout()
+      localStorage.removeItem("token")
       router.push("/login")
     }
   }
