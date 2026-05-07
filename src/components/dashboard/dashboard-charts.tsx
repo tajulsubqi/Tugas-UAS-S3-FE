@@ -64,7 +64,7 @@ export function DashboardCharts({ data, isLoading }: Props) {
         </p>
       </motion.div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="lg:grid space-y-4 lg:space-y-0 gap-4 lg:grid-cols-2">
         <IpkDistributionChart data={data.ipk_distribution} />
         <IpkJurusanChart data={data.ipk_per_jurusan} />
         <SemesterBarChart data={data.mahasiswa_per_semester} />

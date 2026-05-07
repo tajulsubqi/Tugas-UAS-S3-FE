@@ -13,12 +13,8 @@ export default function DashboardPage() {
   const { user, token, hasHydrated } = useAuthStore()
 
   useEffect(() => {
-    // tunggu zustand selesai hydrate
     if (!hasHydrated) return
-
-    // pastikan auth ada
     if (!user || !token) return
-
     const loadDashboard = async () => {
       try {
         await Promise.all([fetchStats(), fetchChartData()])
@@ -30,7 +26,6 @@ export default function DashboardPage() {
     loadDashboard()
   }, [hasHydrated, user, token, fetchStats, fetchChartData])
 
-  // hindari render sebelum hydrate selesai
   if (!hasHydrated) {
     return null
   }
