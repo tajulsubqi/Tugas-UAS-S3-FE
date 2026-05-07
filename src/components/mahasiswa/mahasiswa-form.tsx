@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Dialog,
   DialogContent,
@@ -13,23 +13,27 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { validateMahasiswaForm, ValidationError } from "@/lib/validations";
-import type { Mahasiswa, MahasiswaCreate } from "@/types";
+} from "@/components/ui/select"
+import { validateMahasiswaForm, ValidationError } from "@/lib/validations"
+import type { Mahasiswa, MahasiswaCreate } from "@/types"
 
 interface MahasiswaFormProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (data: MahasiswaCreate) => Promise<{ success: boolean; message?: string; errors?: { field: string; message: string }[] }>;
-  initialData?: Mahasiswa | null;
-  isLoading: boolean;
+  open: boolean
+  onClose: () => void
+  onSubmit: (data: MahasiswaCreate) => Promise<{
+    success: boolean
+    message?: string
+    errors?: { field: string; message: string }[]
+  }>
+  initialData?: Mahasiswa | null
+  isLoading: boolean
 }
 
 const jurusanOptions = [
@@ -37,7 +41,7 @@ const jurusanOptions = [
   "Sistem Informasi",
   "Manajemen Informatika",
   "Teknik Komputer",
-];
+]
 
 const emptyForm = {
   nim: "",
@@ -47,16 +51,23 @@ const emptyForm = {
   ipk: "",
   email: "",
   no_hp: "",
-};
+}
 
-export function MahasiswaForm({ open, onClose, onSubmit, initialData, isLoading }: MahasiswaFormProps) {
-  const [form, setForm] = useState(emptyForm);
-  const [errors, setErrors] = useState<ValidationError[]>([]);
+export function MahasiswaForm({
+  open,
+  onClose,
+  onSubmit,
+  initialData,
+  isLoading,
+}: MahasiswaFormProps) {
+  const [form, setForm] = useState(emptyForm)
+  const [errors, setErrors] = useState<ValidationError[]>([])
 
-  const isEdit = !!initialData;
+  const isEdit = !!initialData
 
   useEffect(() => {
     if (initialData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         nim: initialData.nim,
         nama: initialData.nama,
@@ -65,27 +76,27 @@ export function MahasiswaForm({ open, onClose, onSubmit, initialData, isLoading 
         ipk: String(initialData.ipk),
         email: initialData.email,
         no_hp: initialData.no_hp,
-      });
+      })
     } else {
-      setForm(emptyForm);
+      setForm(emptyForm)
     }
-    setErrors([]);
-  }, [initialData, open]);
+    setErrors([])
+  }, [initialData, open])
 
   const handleChange = (field: string, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => prev.filter((e) => e.field !== field));
-  };
+    setForm((prev) => ({ ...prev, [field]: value }))
+    setErrors((prev) => prev.filter((e) => e.field !== field))
+  }
 
-  const getFieldError = (field: string) => errors.find((e) => e.field === field)?.message;
+  const getFieldError = (field: string) => errors.find((e) => e.field === field)?.message
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const validationErrors = validateMahasiswaForm(form);
+    const validationErrors = validateMahasiswaForm(form)
     if (validationErrors.length > 0) {
-      setErrors(validationErrors);
-      return;
+      setErrors(validationErrors)
+      return
     }
 
     const data: MahasiswaCreate = {
@@ -96,15 +107,15 @@ export function MahasiswaForm({ open, onClose, onSubmit, initialData, isLoading 
       ipk: parseFloat(form.ipk),
       email: form.email,
       no_hp: form.no_hp,
-    };
-
-    const result = await onSubmit(data);
-    if (result.success) {
-      onClose();
-    } else if (result.errors) {
-      setErrors(result.errors.map((e) => ({ field: e.field, message: e.message })));
     }
-  };
+
+    const result = await onSubmit(data)
+    if (result.success) {
+      onClose()
+    } else if (result.errors) {
+      setErrors(result.errors.map((e) => ({ field: e.field, message: e.message })))
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
@@ -161,13 +172,20 @@ export function MahasiswaForm({ open, onClose, onSubmit, initialData, isLoading 
           {/* Jurusan */}
           <div className="space-y-1.5">
             <Label htmlFor="jurusan">Jurusan</Label>
-            <Select value={form.jurusan} onValueChange={(v) => handleChange("jurusan", v ?? "")}>
-              <SelectTrigger className={`rounded-xl ${getFieldError("jurusan") ? "border-destructive" : ""}`}>
+            <Select
+              value={form.jurusan}
+              onValueChange={(v) => handleChange("jurusan", v ?? "")}
+            >
+              <SelectTrigger
+                className={`rounded-xl ${getFieldError("jurusan") ? "border-destructive" : ""}`}
+              >
                 <SelectValue placeholder="Pilih jurusan" />
               </SelectTrigger>
               <SelectContent>
                 {jurusanOptions.map((j) => (
-                  <SelectItem key={j} value={j}>{j}</SelectItem>
+                  <SelectItem key={j} value={j}>
+                    {j}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -245,7 +263,12 @@ export function MahasiswaForm({ open, onClose, onSubmit, initialData, isLoading 
           </div>
 
           <DialogFooter className="pt-2">
-            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="rounded-xl"
+            >
               Batal
             </Button>
             <Button type="submit" disabled={isLoading} className="rounded-xl">
@@ -256,5 +279,5 @@ export function MahasiswaForm({ open, onClose, onSubmit, initialData, isLoading 
         </motion.form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

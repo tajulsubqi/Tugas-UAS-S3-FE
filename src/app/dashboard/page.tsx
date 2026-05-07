@@ -3,16 +3,18 @@
 import { useEffect } from "react"
 import { motion } from "framer-motion"
 import { StatsGrid } from "@/components/dashboard/stats-grid"
+import { DashboardCharts } from "@/components/dashboard/dashboard-charts"
 import { useMahasiswa } from "@/hooks/use-mahasiswa"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function DashboardPage() {
-  const { stats, fetchStats, isLoading } = useMahasiswa()
+  const { stats, chartData, fetchStats, fetchChartData, isLoading } = useMahasiswa()
   const { user } = useAuthStore()
 
   useEffect(() => {
     fetchStats()
-  }, [fetchStats])
+    fetchChartData()
+  }, [fetchStats, fetchChartData])
 
   return (
     <div className="space-y-6">
@@ -32,6 +34,9 @@ export default function DashboardPage() {
 
       {/* Stats grid — reuses existing StatsGrid component */}
       <StatsGrid stats={stats} isLoading={isLoading} />
+
+      {/* Charts section */}
+      <DashboardCharts data={chartData} isLoading={isLoading} />
 
       {/* Algorithm info card */}
       <motion.div

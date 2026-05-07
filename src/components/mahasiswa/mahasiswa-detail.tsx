@@ -1,24 +1,19 @@
-"use client";
+"use client"
 
-import { Mail, Phone, BookOpen, Hash, GraduationCap, TrendingUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
-import type { Mahasiswa } from "@/types";
+import { Mail, Phone, BookOpen, Hash, GraduationCap, TrendingUp } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
+import type { Mahasiswa } from "@/types"
 
 interface MahasiswaDetailProps {
-  open: boolean;
-  onClose: () => void;
-  mahasiswa: Mahasiswa | null;
+  open: boolean
+  onClose: () => void
+  mahasiswa: Mahasiswa | null
 }
 
 export function MahasiswaDetail({ open, onClose, mahasiswa }: MahasiswaDetailProps) {
-  if (!mahasiswa) return null;
+  if (!mahasiswa) return null
 
   const fields = [
     { label: "NIM", value: mahasiswa.nim, icon: Hash },
@@ -28,7 +23,7 @@ export function MahasiswaDetail({ open, onClose, mahasiswa }: MahasiswaDetailPro
     { label: "IPK", value: mahasiswa.ipk.toFixed(2), icon: TrendingUp },
     { label: "Email", value: mahasiswa.email, icon: Mail },
     { label: "Nomor HP", value: mahasiswa.no_hp, icon: Phone },
-  ];
+  ]
 
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
@@ -50,7 +45,9 @@ export function MahasiswaDetail({ open, onClose, mahasiswa }: MahasiswaDetailPro
             </div>
             <div>
               <h3 className="font-semibold text-lg">{mahasiswa.nama}</h3>
-              <Badge variant="secondary" className="rounded-lg mt-1">{mahasiswa.jurusan}</Badge>
+              <Badge variant="secondary" className="rounded-lg mt-1">
+                {mahasiswa.jurusan}
+              </Badge>
             </div>
           </div>
 
@@ -73,5 +70,5 @@ export function MahasiswaDetail({ open, onClose, mahasiswa }: MahasiswaDetailPro
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

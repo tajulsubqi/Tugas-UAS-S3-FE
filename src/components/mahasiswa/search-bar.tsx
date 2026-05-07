@@ -1,16 +1,20 @@
-"use client";
+"use client"
 
-import { Search, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 interface SearchBarProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
 }
 
-export function SearchBar({ value, onChange, placeholder = "Cari mahasiswa..." }: SearchBarProps) {
+export function SearchBar({
+  value,
+  onChange,
+  placeholder = "Cari mahasiswa...",
+}: SearchBarProps) {
   return (
     <div className="relative w-full sm:max-w-xs">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -19,7 +23,7 @@ export function SearchBar({ value, onChange, placeholder = "Cari mahasiswa..." }
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-9 pr-8 h-10 rounded-xl bg-background"
+        className="pl-9 pr-8 h-10 rounded-xl"
       />
       {value && (
         <Button
@@ -32,5 +36,5 @@ export function SearchBar({ value, onChange, placeholder = "Cari mahasiswa..." }
         </Button>
       )}
     </div>
-  );
+  )
 }

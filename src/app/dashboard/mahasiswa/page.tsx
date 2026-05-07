@@ -1,33 +1,45 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { SearchBar } from "@/components/mahasiswa/search-bar";
-import { MahasiswaTable } from "@/components/mahasiswa/mahasiswa-table";
-import { MahasiswaForm } from "@/components/mahasiswa/mahasiswa-form";
-import { MahasiswaDetail } from "@/components/mahasiswa/mahasiswa-detail";
-import { DeleteDialog } from "@/components/mahasiswa/delete-dialog";
-import { useMahasiswa } from "@/hooks/use-mahasiswa";
-import { useDebounce } from "@/hooks/use-debounce";
-import type { Mahasiswa, MahasiswaCreate, MahasiswaQueryParams } from "@/types";
+import { useState, useEffect, useCallback } from "react"
+import { motion } from "framer-motion"
+import { Plus, Filter, X } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { SearchBar } from "@/components/mahasiswa/search-bar"
+import { MahasiswaTable } from "@/components/mahasiswa/mahasiswa-table"
+import { MahasiswaForm } from "@/components/mahasiswa/mahasiswa-form"
+import { MahasiswaDetail } from "@/components/mahasiswa/mahasiswa-detail"
+import { DeleteDialog } from "@/components/mahasiswa/delete-dialog"
+import { useMahasiswa } from "@/hooks/use-mahasiswa"
+import { useDebounce } from "@/hooks/use-debounce"
+import { useAuthStore } from "@/store/auth-store"
+import type { Mahasiswa, MahasiswaCreate, MahasiswaQueryParams } from "@/types"
 
 export default function MahasiswaPage() {
+  const { user } = useAuthStore()
+  const canManageMahasiswa = user?.role === "admin" || user?.role === "dosen"
+
   // ── State ────────────────────────────────────────────────
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("nim");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("")
+  const [jurusanFilter, setJurusanFilter] = useState("")
+  const [sortBy, setSortBy] = useState("nim")
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
+  const [page, setPage] = useState(1)
 
   // Dialog states
-  const [formOpen, setFormOpen] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(null);
+  const [formOpen, setFormOpen] = useState(false)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(null)
 
-  const debouncedSearch = useDebounce(search, 300);
+  const debouncedSearch = useDebounce(search, 300)
 
   const {
     mahasiswaList,
@@ -39,98 +51,108 @@ export default function MahasiswaPage() {
     createMahasiswa,
     updateMahasiswa,
     deleteMahasiswa,
-  } = useMahasiswa();
+  } = useMahasiswa()
 
   // ── Fetch data saat query berubah ────────────────────────
   const loadData = useCallback(() => {
     const params: MahasiswaQueryParams = {
       search: debouncedSearch || undefined,
+      jurusan: jurusanFilter || undefined,
       sort_by: sortBy,
       sort_order: sortOrder,
       sort_algorithm: "merge",
       page,
       per_page: 10,
-    };
-    fetchMahasiswa(params);
-  }, [debouncedSearch, sortBy, sortOrder, page, fetchMahasiswa]);
+    }
+    fetchMahasiswa(params)
+  }, [debouncedSearch, jurusanFilter, sortBy, sortOrder, page, fetchMahasiswa])
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadData()
+  }, [loadData])
 
-  // Reset page saat search berubah
+  // Reset page saat search atau filter berubah
   useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1)
+  }, [debouncedSearch, jurusanFilter])
 
   // ── Handlers ─────────────────────────────────────────────
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
-      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
     } else {
-      setSortBy(field);
-      setSortOrder("asc");
+      setSortBy(field)
+      setSortOrder("asc")
     }
-  };
+  }
 
   const handleCreate = () => {
-    setSelectedMahasiswa(null);
-    setFormOpen(true);
-  };
+    if (!canManageMahasiswa) return
+    setSelectedMahasiswa(null)
+    setFormOpen(true)
+  }
 
   const handleEdit = (mhs: Mahasiswa) => {
-    setSelectedMahasiswa(mhs);
-    setFormOpen(true);
-  };
+    if (!canManageMahasiswa) return
+    setSelectedMahasiswa(mhs)
+    setFormOpen(true)
+  }
 
   const handleView = (mhs: Mahasiswa) => {
-    setSelectedMahasiswa(mhs);
-    setDetailOpen(true);
-  };
+    setSelectedMahasiswa(mhs)
+    setDetailOpen(true)
+  }
 
   const handleDeleteClick = (mhs: Mahasiswa) => {
-    setSelectedMahasiswa(mhs);
-    setDeleteOpen(true);
-  };
+    if (!canManageMahasiswa) return
+    setSelectedMahasiswa(mhs)
+    setDeleteOpen(true)
+  }
 
   const handleFormSubmit = async (data: MahasiswaCreate) => {
+    if (!canManageMahasiswa) {
+      return { success: false, message: "Akses ditolak" }
+    }
+
     if (selectedMahasiswa) {
       // Edit mode
-      const result = await updateMahasiswa(selectedMahasiswa.nim, data);
+      const result = await updateMahasiswa(selectedMahasiswa.nim, data)
       if (result.success) {
-        toast.success(result.message || "Data mahasiswa berhasil diperbarui");
-        loadData();
+        toast.success(result.message || "Data mahasiswa berhasil diperbarui")
+        loadData()
       } else {
-        toast.error(result.message || "Gagal memperbarui data");
+        toast.error(result.message || "Gagal memperbarui data")
       }
-      return result;
+      return result
     } else {
       // Create mode
-      const result = await createMahasiswa(data);
+      const result = await createMahasiswa(data)
       if (result.success) {
-        toast.success(result.message || "Mahasiswa berhasil ditambahkan");
-        loadData();
+        toast.success(result.message || "Mahasiswa berhasil ditambahkan")
+        loadData()
       } else {
-        toast.error(result.message || "Gagal menambahkan mahasiswa");
+        toast.error(result.message || "Gagal menambahkan mahasiswa")
       }
-      return result;
+      return result
     }
-  };
+  }
 
   const handleDeleteConfirm = async () => {
-    if (!selectedMahasiswa) return;
+    if (!canManageMahasiswa) return
+    if (!selectedMahasiswa) return
 
-    const result = await deleteMahasiswa(selectedMahasiswa.nim);
+    const result = await deleteMahasiswa(selectedMahasiswa.nim)
     if (result.success) {
-      toast.success(result.message || "Mahasiswa berhasil dihapus");
-      setDeleteOpen(false);
-      setSelectedMahasiswa(null);
-      loadData();
+      toast.success(result.message || "Mahasiswa berhasil dihapus")
+      setDeleteOpen(false)
+      setSelectedMahasiswa(null)
+      loadData()
     } else {
-      toast.error(result.message || "Gagal menghapus mahasiswa");
+      toast.error(result.message || "Gagal menghapus mahasiswa")
     }
-  };
+  }
 
   // ── Render ───────────────────────────────────────────────
   return (
@@ -147,13 +169,17 @@ export default function MahasiswaPage() {
             Data Mahasiswa
           </h1>
           <p className="text-muted-foreground mt-1">
-            Kelola data mahasiswa — tambah, edit, hapus, dan cari data.
+            {canManageMahasiswa
+              ? "Kelola data mahasiswa — tambah, edit, hapus, dan cari data."
+              : "Lihat data mahasiswa dan lakukan pencarian data."}
           </p>
         </div>
-        <Button onClick={handleCreate} className="rounded-xl gap-2">
-          <Plus className="h-4 w-4" />
-          Tambah Mahasiswa
-        </Button>
+        {canManageMahasiswa && (
+          <Button onClick={handleCreate} className="rounded-xl gap-2">
+            <Plus className="h-4 w-4" />
+            Tambah Mahasiswa
+          </Button>
+        )}
       </motion.div>
 
       {/* Search & table card */}
@@ -163,9 +189,59 @@ export default function MahasiswaPage() {
         transition={{ duration: 0.4, delay: 0.1 }}
         className="rounded-2xl border border-border bg-card p-4 lg:p-6"
       >
-        {/* Search bar */}
-        <div className="mb-4">
+        {/* Search & filter bar */}
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <SearchBar value={search} onChange={setSearch} />
+
+          {/* Jurusan filter */}
+          <Select value={jurusanFilter} onValueChange={(v) => setJurusanFilter(v ?? "")}>
+            <SelectTrigger
+              className={`!h-10 w-56 rounded-xl transition-all duration-200 ${
+                jurusanFilter
+                  ? " bg-primary/5 text-primary ring-1 ring-primary"
+                  : "bg-card hover:bg-accent/50"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Filter
+                  className={`h-4 w-4 shrink-0 ${jurusanFilter ? "text-primary" : "text-muted-foreground"}`}
+                />
+                <SelectValue placeholder="Semua Program Studi" />
+              </div>
+            </SelectTrigger>
+
+            <SelectContent className="rounded-xl border-border shadow-2xl">
+              <SelectItem value="" className="text-sm">
+                Semua Program Studi
+              </SelectItem>
+              <SelectItem value="Teknik Informatika" className="text-sm">
+                Teknik Informatika
+              </SelectItem>
+              <SelectItem value="Sistem Informasi" className="text-sm">
+                Sistem Informasi
+              </SelectItem>
+              <SelectItem value="Teknik Komputer" className="text-sm">
+                Teknik Komputer
+              </SelectItem>
+              <SelectItem value="Manajemen" className="text-sm">
+                Manajemen
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Active filter badge */}
+          {jurusanFilter && (
+            <div className="flex h-10 items-center gap-2 rounded-xl bg-primary/10 border border-primary/20 px-4 py-1 text-sm text-primary">
+              <span className="">Filter: {jurusanFilter}</span>
+              <button
+                onClick={() => setJurusanFilter("")}
+                className="ml-1 rounded-lg bg-primary/20 hover:bg-primary/30 p-1 transition-all"
+                aria-label="Hapus filter jurusan"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Table — reuses existing MahasiswaTable component */}
@@ -178,6 +254,7 @@ export default function MahasiswaPage() {
           onView={handleView}
           onEdit={handleEdit}
           onDelete={handleDeleteClick}
+          canManage={canManageMahasiswa}
           currentPage={currentPage}
           totalPages={totalPages}
           totalData={totalData}
@@ -189,8 +266,8 @@ export default function MahasiswaPage() {
       <MahasiswaForm
         open={formOpen}
         onClose={() => {
-          setFormOpen(false);
-          setSelectedMahasiswa(null);
+          setFormOpen(false)
+          setSelectedMahasiswa(null)
         }}
         onSubmit={handleFormSubmit}
         initialData={selectedMahasiswa}
@@ -200,8 +277,8 @@ export default function MahasiswaPage() {
       <MahasiswaDetail
         open={detailOpen}
         onClose={() => {
-          setDetailOpen(false);
-          setSelectedMahasiswa(null);
+          setDetailOpen(false)
+          setSelectedMahasiswa(null)
         }}
         mahasiswa={selectedMahasiswa}
       />
@@ -209,13 +286,13 @@ export default function MahasiswaPage() {
       <DeleteDialog
         open={deleteOpen}
         onClose={() => {
-          setDeleteOpen(false);
-          setSelectedMahasiswa(null);
+          setDeleteOpen(false)
+          setSelectedMahasiswa(null)
         }}
         onConfirm={handleDeleteConfirm}
         mahasiswa={selectedMahasiswa}
         isLoading={isLoading}
       />
     </div>
-  );
+  )
 }

@@ -36,6 +36,7 @@ interface MahasiswaTableProps {
   isLoading: boolean
   sortBy: string
   sortOrder: "asc" | "desc"
+  canManage: boolean
   onSort: (field: string) => void
   onView: (mahasiswa: Mahasiswa) => void
   onEdit: (mahasiswa: Mahasiswa) => void
@@ -94,6 +95,7 @@ export function MahasiswaTable({
   isLoading,
   sortBy,
   sortOrder,
+  canManage,
   onSort,
   onView,
   onEdit,
@@ -175,7 +177,7 @@ export function MahasiswaTable({
                   </div>
                 </TableHead>
               ))}
-              <TableHead className="w-[80px] text-right">Aksi</TableHead>
+              <TableHead className="w-20 text-right">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -191,7 +193,7 @@ export function MahasiswaTable({
                   onMouseEnter={() => setHoveredRow(mhs.nim)}
                   onMouseLeave={() => setHoveredRow(null)}
                 >
-                  <TableCell className="font-mono text-sm">{mhs.nim}</TableCell>
+                  <TableCell className="font-medium text-sm">{mhs.nim}</TableCell>
                   <TableCell className="font-medium">{mhs.nama}</TableCell>
                   <TableCell className="w-[20%]">
                     <Badge variant="secondary" className="rounded-lg font-normal">
@@ -209,15 +211,19 @@ export function MahasiswaTable({
                         <DropdownMenuItem onClick={() => onView(mhs)}>
                           <Eye className="mr-2 h-4 w-4" /> Detail
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onEdit(mhs)}>
-                          <Pencil className="mr-2 h-4 w-4" /> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onDelete(mhs)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" /> Hapus
-                        </DropdownMenuItem>
+                        {canManage && (
+                          <DropdownMenuItem onClick={() => onEdit(mhs)}>
+                            <Pencil className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
+                        )}
+                        {canManage && (
+                          <DropdownMenuItem
+                            onClick={() => onDelete(mhs)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Hapus
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -262,22 +268,26 @@ export function MahasiswaTable({
                 >
                   <Eye className="mr-1 h-3 w-3" /> Detail
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 text-xs"
-                  onClick={() => onEdit(mhs)}
-                >
-                  <Pencil className="mr-1 h-3 w-3" /> Edit
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 text-xs text-destructive hover:text-destructive"
-                  onClick={() => onDelete(mhs)}
-                >
-                  <Trash2 className="mr-1 h-3 w-3" /> Hapus
-                </Button>
+                {canManage && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => onEdit(mhs)}
+                  >
+                    <Pencil className="mr-1 h-3 w-3" /> Edit
+                  </Button>
+                )}
+                {canManage && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs text-destructive hover:text-destructive"
+                    onClick={() => onDelete(mhs)}
+                  >
+                    <Trash2 className="mr-1 h-3 w-3" /> Hapus
+                  </Button>
+                )}
               </div>
             </motion.div>
           ))}

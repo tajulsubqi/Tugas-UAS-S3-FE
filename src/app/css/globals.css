@@ -121,9 +121,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
   }
+
   html {
     @apply font-sans scroll-smooth;
   }
@@ -136,6 +138,7 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
 .dark .glass {
   background: rgba(30, 30, 50, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -154,13 +157,16 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: oklch(0.7 0.02 270);
   border-radius: 999px;
 }
+
 .dark ::-webkit-scrollbar-thumb {
   background: oklch(0.35 0.02 270);
 }
