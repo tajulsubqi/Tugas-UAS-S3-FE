@@ -6,14 +6,16 @@ import { ResetPasswordForm } from "@/components/auth/reset-password-form"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function ResetPasswordPage() {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, hasHydrated } = useAuthStore()
   const router = useRouter()
 
   useEffect(() => {
+    if (!hasHydrated) return
+
     if (isAuthenticated) {
       router.replace("/dashboard")
     }
-  }, [isAuthenticated, router])
+  }, [hasHydrated, isAuthenticated, router])
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12 bg-linear-to-br from-background via-background to-primary/5">

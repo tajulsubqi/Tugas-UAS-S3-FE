@@ -6,15 +6,17 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
 export default function LoginPage() {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, hasHydrated } = useAuthStore()
   const router = useRouter()
 
   // Jika sudah login, redirect ke dashboard
   useEffect(() => {
+    if (!hasHydrated) return
+
     if (isAuthenticated) {
       router.replace("/dashboard")
     }
-  }, [isAuthenticated, router])
+  }, [hasHydrated, isAuthenticated, router])
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-10">
