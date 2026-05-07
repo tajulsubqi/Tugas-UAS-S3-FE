@@ -9,12 +9,14 @@ import { useAuthStore } from "@/store/auth-store"
 
 export default function DashboardPage() {
   const { stats, chartData, fetchStats, fetchChartData, isLoading } = useMahasiswa()
-  const { user } = useAuthStore()
+  const { user, token } = useAuthStore()
 
   useEffect(() => {
+    if (!user || !token) return
+
     fetchStats()
     fetchChartData()
-  }, [fetchStats, fetchChartData])
+  }, [user, token, fetchStats, fetchChartData])
 
   return (
     <div className="space-y-6">
