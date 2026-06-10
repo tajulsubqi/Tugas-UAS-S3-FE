@@ -177,7 +177,7 @@ export function MahasiswaForm({
               onValueChange={(v) => handleChange("jurusan", v ?? "")}
             >
               <SelectTrigger
-                className={`rounded-xl ${getFieldError("jurusan") ? "border-destructive" : ""}`}
+                className={`w-full rounded-xl ${getFieldError("jurusan") ? "border-destructive" : ""}`}
               >
                 <SelectValue placeholder="Pilih jurusan" />
               </SelectTrigger>
