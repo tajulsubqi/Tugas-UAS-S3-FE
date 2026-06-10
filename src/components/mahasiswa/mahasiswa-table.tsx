@@ -151,11 +151,12 @@ export function MahasiswaTable({
   }
 
   const sortableHeaders = [
-    { key: "nim", label: "NIM" },
     { key: "nama", label: "Nama" },
+    { key: "nim", label: "NIM" },
     { key: "jurusan", label: "Jurusan" },
-    { key: "semester", label: "Semester" },
+    { key: "semester", label: "Semester", center: true },
     { key: "ipk", label: "IPK" },
+    { key: "no_hp", label: "No HP" },
   ]
 
   return (
@@ -165,10 +166,11 @@ export function MahasiswaTable({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
-              {sortableHeaders.map((header, index) => (
+              <TableHead className="w-12 text-center">No</TableHead>
+              {sortableHeaders.map((header) => (
                 <TableHead
-                  key={index}
-                  className={`cursor-pointer select-none hover:text-foreground transition-colors ${index === 3 ? "text-center flex justify-center" : ""}`}
+                  key={header.key}
+                  className={`cursor-pointer select-none hover:text-foreground transition-colors ${header.center ? "text-center" : ""}`}
                   onClick={() => onSort(header.key)}
                 >
                   <div className="flex items-center gap-1.5">
@@ -193,8 +195,14 @@ export function MahasiswaTable({
                   onMouseEnter={() => setHoveredRow(mhs.nim)}
                   onMouseLeave={() => setHoveredRow(null)}
                 >
-                  <TableCell className="font-medium text-sm">{mhs.nim}</TableCell>
-                  <TableCell className="font-medium">{mhs.nama}</TableCell>
+                  <TableCell className="text-center text-sm text-muted-foreground">
+                    {(currentPage - 1) * 10 + i + 1}
+                  </TableCell>
+                  <TableCell>
+                    <p className="font-medium">{mhs.nama}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{mhs.email}</p>
+                  </TableCell>
+                  <TableCell className="font-medium text-sm font-mono">{mhs.nim}</TableCell>
                   <TableCell className="w-[20%]">
                     <Badge variant="secondary" className="rounded-lg font-normal">
                       {mhs.jurusan}
@@ -202,6 +210,7 @@ export function MahasiswaTable({
                   </TableCell>
                   <TableCell className="text-center">{mhs.semester}</TableCell>
                   <TableCell>{getIpkBadge(mhs.ipk)}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{mhs.no_hp}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer">
@@ -246,18 +255,23 @@ export function MahasiswaTable({
               transition={{ duration: 0.2, delay: i * 0.05 }}
               className="rounded-xl border border-border bg-card p-4 space-y-3"
             >
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex items-start justify-between gap-3">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-muted text-xs font-medium text-muted-foreground">
+                  {(currentPage - 1) * 10 + i + 1}
+                </span>
+                <div className="flex-1 min-w-0">
                   <p className="font-semibold">{mhs.nama}</p>
-                  <p className="text-sm text-muted-foreground font-mono">{mhs.nim}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{mhs.email}</p>
+                  <p className="text-sm text-muted-foreground font-mono mt-1">{mhs.nim}</p>
                 </div>
-                {getIpkBadge(mhs.ipk)}
+                <div className="shrink-0">{getIpkBadge(mhs.ipk)}</div>
               </div>
               <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                 <Badge variant="secondary" className="rounded-lg font-normal text-xs">
                   {mhs.jurusan}
                 </Badge>
                 <span>Semester {mhs.semester}</span>
+                <span>{mhs.no_hp}</span>
               </div>
               <div className="flex gap-2 pt-1 border-t border-border">
                 <Button

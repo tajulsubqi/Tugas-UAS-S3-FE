@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
-import { Plus, Filter, X } from "lucide-react"
+import { Plus, Filter, X, FileSpreadsheet, FileText } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,6 +20,11 @@ import { DeleteDialog } from "@/components/mahasiswa/delete-dialog"
 import { useMahasiswa } from "@/hooks/use-mahasiswa"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useAuthStore } from "@/store/auth-store"
+import {
+  exportMahasiswaToExcel,
+  exportMahasiswaToPdf,
+  fetchAllMahasiswaForExport,
+} from "@/lib/export-mahasiswa"
 import type { Mahasiswa, MahasiswaCreate, MahasiswaQueryParams } from "@/types"
 
 export default function MahasiswaPage() {
@@ -32,6 +37,7 @@ export default function MahasiswaPage() {
   const [sortBy, setSortBy] = useState("nim")
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
   const [page, setPage] = useState(1)
+  const [isExporting, setIsExporting] = useState(false)
 
   // Dialog states
   const [formOpen, setFormOpen] = useState(false)
@@ -139,6 +145,36 @@ export default function MahasiswaPage() {
     }
   }
 
+  const getExportParams = () => ({
+    search: debouncedSearch || undefined,
+    jurusan: jurusanFilter || undefined,
+    sort_by: sortBy,
+    sort_order: sortOrder,
+    sort_algorithm: "merge" as const,
+  })
+
+  const handleExport = async (format: "pdf" | "excel") => {
+    setIsExporting(true)
+    try {
+      const data = await fetchAllMahasiswaForExport(getExportParams())
+      if (data.length === 0) {
+        toast.error("Tidak ada data untuk diekspor")
+        return
+      }
+      if (format === "excel") {
+        exportMahasiswaToExcel(data)
+        toast.success("Berhasil mengekspor data ke Excel")
+      } else {
+        exportMahasiswaToPdf(data)
+        toast.success("Berhasil mengekspor data ke PDF")
+      }
+    } catch {
+      toast.error("Gagal mengekspor data mahasiswa")
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   const handleDeleteConfirm = async () => {
     if (!canManageMahasiswa) return
     if (!selectedMahasiswa) return
@@ -242,6 +278,27 @@ export default function MahasiswaPage() {
               </button>
             </div>
           )}
+
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <Button
+              variant="outline"
+              className="h-10 rounded-xl gap-2"
+              onClick={() => handleExport("excel")}
+              disabled={isExporting}
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              Export Excel
+            </Button>
+            <Button
+              variant="outline"
+              className="h-10 rounded-xl gap-2"
+              onClick={() => handleExport("pdf")}
+              disabled={isExporting}
+            >
+              <FileText className="h-4 w-4" />
+              Export PDF
+            </Button>
+          </div>
         </div>
 
         {/* Table — reuses existing MahasiswaTable component */}
